@@ -62,25 +62,25 @@ export default class App extends React.Component {
   }
 
   testFunc = () => {
-    if(this.state.inputText ===''){
+    if (this.state.inputText === '') {
       return;
-    } else{
-    this.setState({
-      isLoading: true
-    })
-    var db = firebase.database().ref('users/' + this.state.inputText);
-    db.set({
-      name: this.state.inputText
-    }).then(() => {
+    } else {
       this.setState({
-        isLoading: false,
-        inputText: ''
+        isLoading: true
       })
-      Keyboard.dismiss();
-      ToastAndroid.show('Success Add', ToastAndroid.SHORT);
-    }).catch((error) => { alert(error) })
+      var db = firebase.database().ref('users/' + this.state.inputText);
+      db.set({
+        name: this.state.inputText
+      }).then(() => {
+        this.setState({
+          isLoading: false,
+          inputText: ''
+        })
+        Keyboard.dismiss();
+        ToastAndroid.show('Success Add', ToastAndroid.SHORT);
+      }).catch((error) => { alert(error) })
+    }
   }
-}
 
   testFuncBulk = () => {
 
@@ -116,6 +116,27 @@ export default class App extends React.Component {
 
   }
 
+  handlePickerValueChange = (val) => {
+    this.setState({ userName: val });
+    console.log(val);
+  }
+
+  Register = () => {
+    firebase.auth().createUserWithEmailAndPassword("acohen04@gmail.com", "123456789").then((val) => {
+      console.log(val);
+    }).catch((error) => {
+      console.log(error)
+    })
+  }
+
+  SignIn = () => {
+    firebase.auth().signInWithEmailAndPassword("acohen04@gmail.com", "123456789").then((val) => {
+      console.log(val);
+    }).catch((error) => {
+      console.log(error)
+    })
+  }
+
   render() {
     const { userArray } = this.state
     console.log(userArray + "1");
@@ -124,13 +145,12 @@ export default class App extends React.Component {
     if (userArray.length > 0) {
       var array = JSON.parse(userArray);
       res = <Picker
-        selectedValue={this.state.language}
+        selectedValue={this.state.userName}
         style={{ height: 50, width: 150 }}
-        onValueChange={(itemValue, itemIndex) =>
-          this.setState({ language: itemValue })
+        onValueChange={(itemValue) => this.handlePickerValueChange(itemValue)
         }>
         {Object.values(array).map((val, index) => {
-          return (<Picker.Item label={val.name} value={val.nae} key={index} />)
+          return (<Picker.Item label={val.name} value={val.name} key={index} />)
         })}
       </Picker>
     }
@@ -145,6 +165,12 @@ export default class App extends React.Component {
         {this.state.isLoading == true &&
           <ActivityIndicator size="large" color="#0000ff" />
         }
+
+
+        <Button onPress={this.Register} title='Register' />
+
+        <Button onPress={this.SignIn} title='SignIn' />
+
       </View>
     )
   }
