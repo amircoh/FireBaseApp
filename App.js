@@ -1,11 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
 import React from 'react';
 import {
   SafeAreaView,
@@ -14,6 +6,8 @@ import {
   View,
   Text,
   StatusBar,
+  Button,
+  TextInput, ActivityIndicator, ToastAndroid, Keyboard, Picker
 } from 'react-native';
 
 import {
@@ -24,91 +18,136 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-const App: () => React$Node = () => {
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
-};
+import firebase from 'firebase';
 
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
+export default class App extends React.Component {
 
-export default App;
+  constructor(props) {
+    super(props)
+    this.state = {
+      inputText: '',
+      isLoading: false,
+      userArray: []
+    }
+  }
+
+  componentDidMount() {
+    var firebaseConfig = {
+      apiKey: "AIzaSyCY9ElYgl3R0Nyj8_JmJNuvn8SD5yFh18A",
+      authDomain: "social-6a813.firebaseapp.com",
+      databaseURL: "https://social-6a813.firebaseio.com",
+      projectId: "social-6a813",
+      storageBucket: "social-6a813.appspot.com",
+      messagingSenderId: "714246493079",
+      appId: "1:714246493079:web:eb4615774a2423cb366ad2",
+      measurementId: "G-CTYM8KKYX9"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    this.getData();
+  }
+
+
+  getData = () => {
+    firebase.database().ref('users').on('value', (snap) => {
+
+      this.setState({
+        userArray: JSON.stringify(snap.val())
+      })
+    }, function (error) {
+      console.log(error)
+    })
+  }
+
+  testFunc = () => {
+    if(this.state.inputText ===''){
+      return;
+    } else{
+    this.setState({
+      isLoading: true
+    })
+    var db = firebase.database().ref('users/' + this.state.inputText);
+    db.set({
+      name: this.state.inputText
+    }).then(() => {
+      this.setState({
+        isLoading: false,
+        inputText: ''
+      })
+      Keyboard.dismiss();
+      ToastAndroid.show('Success Add', ToastAndroid.SHORT);
+    }).catch((error) => { alert(error) })
+  }
+}
+
+  testFuncBulk = () => {
+
+    var names = [
+      {
+        name: 'amir11',
+        age: 22
+      },
+      {
+        name: 'test11',
+        age: 33
+      }
+    ]
+
+    this.setState({
+      isLoading: true
+    })
+
+    names.forEach(value => {
+      var db = firebase.database().ref('users/' + value.name);
+      db.set({
+        name: value.name
+      }).then(() => {
+        this.setState({
+          isLoading: false,
+          inputText: ''
+        })
+        Keyboard.dismiss();
+        ToastAndroid.show('Success Add', ToastAndroid.SHORT);
+      }).catch((error) => { alert(error) })
+
+    });
+
+  }
+
+  render() {
+    const { userArray } = this.state
+    console.log(userArray + "1");
+    let res;
+
+    if (userArray.length > 0) {
+      var array = JSON.parse(userArray);
+      res = <Picker
+        selectedValue={this.state.language}
+        style={{ height: 50, width: 150 }}
+        onValueChange={(itemValue, itemIndex) =>
+          this.setState({ language: itemValue })
+        }>
+        {Object.values(array).map((val, index) => {
+          return (<Picker.Item label={val.name} value={val.nae} key={index} />)
+        })}
+      </Picker>
+    }
+
+
+    return (
+      <View>
+        <TextInput value={this.state.inputText} onChangeText={(text) => this.setState({ inputText: text })} placeholder='enter name'></TextInput>
+        <Button onPress={this.testFunc} title='asdas' />
+        <Button onPress={this.testFuncBulk} title='Bulk' />
+        {res}
+        {this.state.isLoading == true &&
+          <ActivityIndicator size="large" color="#0000ff" />
+        }
+      </View>
+    )
+  }
+
+}
+
