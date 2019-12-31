@@ -6,15 +6,23 @@ import { createStackNavigator } from 'react-navigation-stack';
 import HomeScreen from './Home';
 import SignIn from './SignIn'
 
-const RootStack = createStackNavigator(
-  {
-    Home: HomeScreen,
-    Details: SignIn,
+
+
+const RootStack = createStackNavigator({
+  Home: {
+    screen: HomeScreen,
+    navigationOptions: {
+      title: 'Home'
+    },
   },
-  {
-    initialRouteName: 'Home',
-  }
-);
+  Details: {
+    screen: SignIn,
+    navigationOptions: {
+      title: 'Chat with Lucy'
+    }
+  },
+}, {headerMode: 'none'});
+
 
 const AppContainer = createAppContainer(RootStack);
 
