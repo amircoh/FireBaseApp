@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View,ActivityIndicator ,AsyncStorage} from 'react-native';
+import { View, ActivityIndicator, AsyncStorage } from 'react-native';
 import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base';
 import styles from './MainStyle'
 import firebase from 'firebase';
@@ -14,11 +14,8 @@ export default class FixedLabelExample extends Component {
         }
     }
 
-    componentWillMount(){
-        //this.IsLogedInFromLocalStorage();
-    }
     componentDidMount() {
-      
+        //this.IsLogedInFromLocalStorage();
         var firebaseConfig = {
             apiKey: "AIzaSyCY9ElYgl3R0Nyj8_JmJNuvn8SD5yFh18A",
             authDomain: "social-6a813.firebaseapp.com",
@@ -37,15 +34,15 @@ export default class FixedLabelExample extends Component {
 
     IsLogedInFromLocalStorage = async () => {
         try {
-          const value = await AsyncStorage.getItem('@IsLogedIn')
-          if(value && value ==='true') {
-           console.log(value);
-           this.props.navigation.navigate('Details')
-          }
-        } catch(e) {
+            const value = await AsyncStorage.getItem('@IsLogedIn')
+            if (value && value === 'true') {
+                console.log(value);
+                this.props.navigation.navigate('Details')
+            }
+        } catch (e) {
             console.log(e);;
         }
-      }
+    }
 
 
     Register = () => {
@@ -57,19 +54,50 @@ export default class FixedLabelExample extends Component {
     }
 
     SignIn = () => {
-      
+
         var _this = this;
-        _this.setState({isLoading:true})
+        _this.setState({ isLoading: true })
         firebase.auth().signInWithEmailAndPassword(_this.state.userMail, _this.state.userPassword).then((val) => {
             console.log(val);
             if (val) {
-                _this.setState({isLoading:false})
+                _this.setState({ isLoading: false })
                 _this.props.navigation.navigate('Details')
             }
         }).catch((error) => {
-            _this.setState({isLoading:false})
+            _this.setState({ isLoading: false })
             alert(error)
         })
+    }
+
+    FacebookSignIn = () => {
+
+        var provider = new firebase.auth.FacebookAuthProvider();
+        // provider.addScope('user_photos');
+        provider.setCustomParameters({
+            'display': 'popup'
+        })
+
+        firebase.auth().signInWithPopup(provider).then(function(result) {
+            // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+            var token = result.credential.accessToken;
+            // The signed-in user info.
+            var user = result.user;
+
+            alert(user);
+            // ...
+          }).catch(function(error) {
+              alert(error);
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            // ...
+          });
+
+
     }
 
     render() {
@@ -79,18 +107,18 @@ export default class FixedLabelExample extends Component {
                 <Content style={styles.container}>
                     <Form>
                         <Item rounded style={styles.LoginTxtUserName}>
-                            <Input placeholder='    UserName'  value={this.state.userMail} onChangeText={(text) => this.setState({ userMail: text })}/>
+                            <Input placeholder='    UserName' value={this.state.userMail} onChangeText={(text) => this.setState({ userMail: text })} />
                         </Item>
                         <Item rounded last style={styles.LoginTxtPassword}>
-                            <Input secureTextEntry={true} placeholder=' Password'  value={this.state.userPassword} onChangeText={(text) => this.setState({ userPassword: text })} />
+                            <Input secureTextEntry={true} placeholder=' Password' value={this.state.userPassword} onChangeText={(text) => this.setState({ userPassword: text })} />
                         </Item>
-                        <Button rounded style={styles.LoginButton} onPress={this.SignIn}>
+                        <Button rounded style={styles.LoginButton} onPress={this.FacebookSignIn}>
                             <Text>LogIn</Text>
                         </Button>
                     </Form>
                 </Content>
                 {this.state.isLoading == true &&
-                    <ActivityIndicator size="large" color="#0000ff" />
+                    <ActivityIndicator style={styles.Loader} size="large" color="#0000ff" />
                 }
             </Container>
         );
