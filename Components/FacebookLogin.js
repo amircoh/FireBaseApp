@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { View, Image, ToastAndroid, Keyboard } from 'react-native';
+import { View, Image, ToastAndroid, Keyboard, AsyncStorage } from 'react-native';
 import styles from './MainStyle'
 import { LoginButton, AccessToken, GraphRequest, GraphRequestManager, LoginManager } from 'react-native-fbsdk';
 import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base';
-import { AppConfig } from '../Enums';
+import * as Common from '../Enums';
 import firebase from 'firebase';
 
 export default class LoginFB extends Component {
@@ -54,6 +54,10 @@ export default class LoginFB extends Component {
                 //success Logged In
 
                 this.addUserToFirebaseDB(result.id, result.name)
+
+                Common.SaveToLocalStorage('userid',result.id);
+              
+
                 console.log(result.toString());
                 // this.setState({
                 //     pic: result.picture.data.url
@@ -139,9 +143,9 @@ export default class LoginFB extends Component {
 
     componentDidMount() {
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(AppConfig.firebaseConfig);
-        }
+       Common.GetDataFromLocalStorage('userid');
+
+       Common.initFirebase();
 
         if (this.state.isLogedIn === 'false') {
             this.fbAutomaticLogin();

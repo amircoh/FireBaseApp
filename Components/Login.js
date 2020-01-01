@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { View, ActivityIndicator, AsyncStorage } from 'react-native';
 import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base';
 import FacebookLogin from './FacebookLogin';
-import { AppConfig } from '../Enums';
+
+import * as Common from '../Enums';
 
 import styles from './MainStyle'
 import firebase from 'firebase';
@@ -19,10 +20,7 @@ export default class FixedLabelExample extends Component {
 
     componentDidMount() {
         //this.IsLogedInFromLocalStorage();
-
-        if (!firebase.apps.length) {
-            firebase.initializeApp(AppConfig.firebaseConfig);
-        }
+        Common.initFirebase();
     }
 
     IsLogedInFromLocalStorage = async () => {
