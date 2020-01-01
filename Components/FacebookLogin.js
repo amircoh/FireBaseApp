@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
-import { View, Button, Image } from 'react-native';
-import { LoginButton, AccessToken, GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
+import { View, Image, ToastAndroid, Keyboard } from 'react-native';
+import styles from './MainStyle'
+import { LoginButton, AccessToken, GraphRequest, GraphRequestManager, LoginManager } from 'react-native-fbsdk';
+import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base';
+import { AppConfig } from '../Enums';
+import firebase from 'firebase';
 
 export default class LoginFB extends Component {
 
@@ -8,21 +12,114 @@ export default class LoginFB extends Component {
         super(props)
         this.state = {
             pic: '',
+            isLogedIn: 'true'
         }
     }
 
-    _responseInfoCallback = (error, result) => {
-        if (error) {
-            alert('Error fetching data: ' + error.toString());
-        } else {
-            console.log(result.toString());
-            this.setState({
-                pic: result.picture.data.url
-            })
-        }
+    addUserToFirebaseDB = (userid, userName) => {
+
+        var db = firebase.database().ref('UsersLogin/' + userid);
+        db.set({
+            name: userName
+        }).then(() => {
+            Keyboard.dismiss();
+            ToastAndroid.show('Success Add', ToastAndroid.SHORT);
+            this.props.navigation.navigate('Details');
+        }).catch((error) => { alert(error) })
+
     }
 
-    getGrapf = () => {
+
+    loginClick = () => {
+
+        _responseInfoCallback = (error, result) => {
+            if (error) {
+
+                LoginManager.logInWithPermissions(["public_profile"]).then(
+                    function (result) {
+                        if (result.isCancelled) {
+                            console.log("Login cancelled");
+                        } else {
+                            console.log(
+                                "Login success with permissions: " +
+                                result.grantedPermissions.toString()
+                            );
+                        }
+                    },
+                    function (error) {
+                        console.log("Login fail with error: " + error);
+                    }
+                );
+            } else {
+                //success Logged In
+
+                this.addUserToFirebaseDB(result.id, result.name)
+                console.log(result.toString());
+                // this.setState({
+                //     pic: result.picture.data.url
+                // })
+
+            }
+        }
+
+        LoginManager.logInWithPermissions(["public_profile"]).then(
+            function (result) {
+                if (result.isCancelled) {
+                    console.log("Login cancelled");
+                } else {
+                    //success login
+                    const infoRequest = new GraphRequest(
+                        '/me',
+                        {
+                            parameters: {
+                                fields: {
+                                    string: 'id,picture,email,name,first_name,middle_name,last_name'
+                                }
+                            }
+                        },
+                        this._responseInfoCallback,
+                    );
+                    // Start the graph request.
+                    new GraphRequestManager().addRequest(infoRequest).start();
+
+                }
+            },
+            function (error) {
+                console.log("Login fail with error: " + error);
+            }
+        );
+    }
+
+    fbAutomaticLogin = () => {
+
+        _responseInfoCallback = (error, result) => {
+
+            if (error) {
+
+                LoginManager.logInWithPermissions(["public_profile"]).then(
+                    function (result) {
+                        if (result.isCancelled) {
+                            console.log("Login cancelled");
+                        } else {
+                            console.log(
+                                "Login success with permissions: " +
+                                result.grantedPermissions.toString()
+                            );
+                        }
+                    },
+                    function (error) {
+                        console.log("Login fail with error: " + error);
+                    }
+                );
+            } else {
+                //success Logged In
+                console.log(result.toString());
+                this.setState({
+                    pic: result.picture.data.url
+                })
+                this.props.navigation.navigate('Details');
+            }
+        }
 
         const infoRequest = new GraphRequest(
             '/me',
@@ -33,37 +130,37 @@ export default class LoginFB extends Component {
                     }
                 }
             },
-            this._responseInfoCallback,
+            _responseInfoCallback,
         );
         // Start the graph request.
         new GraphRequestManager().addRequest(infoRequest).start();
     }
 
 
+    componentDidMount() {
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(AppConfig.firebaseConfig);
+        }
+
+        if (this.state.isLogedIn === 'false') {
+            this.fbAutomaticLogin();
+        }
+    }
+
     render() {
         return (
             <View>
-                <LoginButton
-                    onLoginFinished={
-                        (error, result) => {
-                            if (error) {
-                                console.log("login has error: " + result.error);
-                            } else if (result.isCancelled) {
-                                console.log("login is cancelled.");
-                            } else {
-                                AccessToken.getCurrentAccessToken().then(
-                                    (data) => {
-                                        console.log(data.accessToken.toString())
-                                    }
-                                )
-                            }
-                        }
-                    }
-                    onLogoutFinished={() => console.log("logout.")} />
-                <Button
-                    title="Press me"
-                    onPress={this.getGrapf}
-                />
+
+                <Button rounded style={styles.LoginButton} onPress={this.loginClick}>
+                    <Text>Login With Facebook</Text>
+                </Button>
+
+
+                <Button rounded style={styles.LoginButton} onPress={() => { LoginManager.logOut() }}>
+                    <Text>LogOut</Text>
+                </Button>
+
                 {this.state.pic !== null &&
                     <Image style={{ width: 50, height: 50 }} source={{ uri: this.state.pic }} />
                 }
