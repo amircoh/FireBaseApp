@@ -14,30 +14,30 @@ export const AppConfig = {
     },
 }
 
-export function initFirebase(){
+export function initFirebase() {
     if (!firebase.apps.length) {
         firebase.initializeApp(AppConfig.firebaseConfig);
     }
 }
 
-export function SaveToLocalStorage(name, value) {
-    AsyncStorage.setItem(name, value).then((res) => {
+export async function SaveToLocalStorage(name, value) {
+    await AsyncStorage.setItem(name, value).then((res) => {
         console.log(res);
     }).catch((error) => {
         console.log(error);
     })
 }
 
-export function GetDataFromLocalStorage(value) {
-    AsyncStorage.getItem(value).then((res) => {
+export async function GetDataFromLocalStorage(value) {
+    await AsyncStorage.getItem(value).then((res) => {
         console.log(res);
     }).catch((error) => {
         console.log(error);
     })
 }
 
-export function RemoveDataFromLocalStorage(value) {
-    AsyncStorage.removeItem(value).then((res) => {
+export async function RemoveDataFromLocalStorage(value) {
+    await AsyncStorage.removeItem(value).then((res) => {
         console.log(res);
     }).catch((error) => {
         console.log(error);

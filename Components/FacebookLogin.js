@@ -3,7 +3,7 @@ import { View, Image, ToastAndroid, Keyboard, AsyncStorage } from 'react-native'
 import styles from './MainStyle'
 import { LoginButton, AccessToken, GraphRequest, GraphRequestManager, LoginManager } from 'react-native-fbsdk';
 import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base';
-import * as Common from '../Enums';
+import * as Common from '../CommonFunction';
 import firebase from 'firebase';
 
 export default class LoginFB extends Component {
@@ -28,7 +28,6 @@ export default class LoginFB extends Component {
         }).catch((error) => { alert(error) })
 
     }
-
 
     loginClick = () => {
 
@@ -55,8 +54,8 @@ export default class LoginFB extends Component {
 
                 this.addUserToFirebaseDB(result.id, result.name)
 
-                Common.SaveToLocalStorage('userid',result.id);
-              
+                Common.SaveToLocalStorage('userid', result.id);
+
 
                 console.log(result.toString());
                 // this.setState({
@@ -143,9 +142,9 @@ export default class LoginFB extends Component {
 
     componentDidMount() {
 
-       Common.GetDataFromLocalStorage('userid');
+        Common.GetDataFromLocalStorage('userid');
 
-       Common.initFirebase();
+        Common.initFirebase();
 
         if (this.state.isLogedIn === 'false') {
             this.fbAutomaticLogin();
@@ -159,7 +158,6 @@ export default class LoginFB extends Component {
                 <Button rounded style={styles.LoginButton} onPress={this.loginClick}>
                     <Text>Login With Facebook</Text>
                 </Button>
-
 
                 <Button rounded style={styles.LoginButton} onPress={() => { LoginManager.logOut() }}>
                     <Text>LogOut</Text>

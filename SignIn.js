@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 //import AsyncStorage from '@react-native-community/async-storage';
 import firebase from 'firebase';
-import { AppConfig } from './Enums';
+import { AppConfig } from './CommonFunction';
 
 export default class SignIn extends React.Component {
 
