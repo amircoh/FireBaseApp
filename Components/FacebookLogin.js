@@ -163,6 +163,11 @@ export default class LoginFB extends Component {
                     <Text>LogOut</Text>
                 </Button>
 
+
+                <Button rounded style={styles.LoginButton} onPress={() => {  this.props.navigation.toggleDrawer() }}>
+                    <Text>Open</Text>
+                </Button>
+
                 {this.state.pic !== null &&
                     <Image style={{ width: 50, height: 50 }} source={{ uri: this.state.pic }} />
                 }

@@ -2,13 +2,13 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import {createDrawerNavigator} from 'react-navigation-drawer';
 
 import HomeScreen from './Home';
 import SignIn from './SignIn'
 
 
-
-const RootStack = createStackNavigator({
+const RootStack = createDrawerNavigator({
   Home: {
     screen: HomeScreen,
     navigationOptions: {
@@ -18,11 +18,13 @@ const RootStack = createStackNavigator({
   Details: {
     screen: SignIn,
     navigationOptions: {
-      title: 'Chat with Lucy'
+      title: 'Details'
     }
-  },
-}, {headerMode: 'none'});
-
+  }
+}, {
+  drawerType:'slide' ,edgeWidth:10
+  
+})
 
 const AppContainer = createAppContainer(RootStack);
 
