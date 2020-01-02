@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, ActivityIndicator, AsyncStorage } from 'react-native';
-import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base';
+import { Container, Header, Content, Form, Item, Input, Label, Button, Text, Icon, Left, Title, Body, Right } from 'native-base';
 import FacebookLogin from './FacebookLogin';
 
 import * as Common from '../CommonFunction';
@@ -61,7 +61,24 @@ export default class FixedLabelExample extends Component {
     render() {
         return (
             <Container>
-                <Header />
+
+                <Header>
+                    <Left>
+                        <Button transparent>
+                            <Icon name='arrow-back' />
+                        </Button>
+                    </Left>
+                    <Body>
+                        <Title>Header</Title>
+                    </Body>
+                    <Right>
+                        <Button transparent>
+                            <Icon name='menu' onPress={() => { this.props.navigation.toggleDrawer() }} />
+                        </Button>
+                    </Right>
+                </Header>
+
+
                 <Content style={styles.container}>
                     {/* firebaseLogin
                     <Form>
@@ -76,7 +93,7 @@ export default class FixedLabelExample extends Component {
                         </Button>
 
                     </Form> */}
-                        <FacebookLogin navigation={this.props.navigation}/>
+                    <FacebookLogin navigation={this.props.navigation} />
                 </Content>
                 {this.state.isLoading == true &&
                     <ActivityIndicator style={styles.Loader} size="large" color="#0000ff" />

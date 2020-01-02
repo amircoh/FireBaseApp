@@ -56,7 +56,7 @@ export default class LoginFB extends Component {
 
                 Common.SaveToLocalStorage('userid', result.id);
 
-
+                this.props.navigation.navigate('Details')
                 console.log(result.toString());
                 // this.setState({
                 //     pic: result.picture.data.url
@@ -161,11 +161,6 @@ export default class LoginFB extends Component {
 
                 <Button rounded style={styles.LoginButton} onPress={() => { LoginManager.logOut() }}>
                     <Text>LogOut</Text>
-                </Button>
-
-
-                <Button rounded style={styles.LoginButton} onPress={() => {  this.props.navigation.toggleDrawer() }}>
-                    <Text>Open</Text>
                 </Button>
 
                 {this.state.pic !== null &&

@@ -4,6 +4,8 @@ import {
     Button,
     TextInput, ActivityIndicator, ToastAndroid, Keyboard, Picker, AsyncStorage
 } from 'react-native';
+
+import { Container, Header, Content, Form, Item, Input, Label, Text,Thumbnail } from 'native-base';
 //import AsyncStorage from '@react-native-community/async-storage';
 import firebase from 'firebase';
 import { AppConfig } from './CommonFunction';
