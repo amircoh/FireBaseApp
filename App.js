@@ -7,12 +7,11 @@ import { createDrawerNavigator } from 'react-navigation-drawer';
 import HomeScreen from './Home';
 import SignIn from './SignIn'
 
+
 const DrawerStack = createDrawerNavigator({
-  Home: {
-    screen: HomeScreen,
-    navigationOptions: {
-      title: 'Home'
-    },
+
+  Details: {
+    screen: SignIn
   }
 }, {
   drawerType: 'slide', edgeWidth: 10
@@ -20,12 +19,13 @@ const DrawerStack = createDrawerNavigator({
 
 const RootStack = createStackNavigator({
   Home: {
-    screen: DrawerStack,
+    screen: HomeScreen,
   },
   Details: {
-    screen: SignIn
+    screen: DrawerStack
   }
 }, { headerMode: 'none' })
+
 
 const AppContainer = createAppContainer(RootStack);
 

@@ -11,7 +11,6 @@ export default class LoginFB extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            pic: '',
             isLogedIn: 'true'
         }
     }
@@ -56,12 +55,9 @@ export default class LoginFB extends Component {
 
                 Common.SaveToLocalStorage('userid', result.id);
 
-                this.props.navigation.navigate('Details')
-                console.log(result.toString());
-                // this.setState({
-                //     pic: result.picture.data.url
-                // })
-
+                this.props.navigation.navigate('Details', {
+                    userIdPic: result.picture.data.url
+                });
             }
         }
 
@@ -116,11 +112,9 @@ export default class LoginFB extends Component {
                 );
             } else {
                 //success Logged In
-                console.log(result.toString());
-                this.setState({
-                    pic: result.picture.data.url
-                })
-                this.props.navigation.navigate('Details');
+                this.props.navigation.navigate('Details',{
+                    userIdPic: result.picture.data.url
+                });
             }
         }
 
@@ -141,14 +135,17 @@ export default class LoginFB extends Component {
 
 
     componentDidMount() {
-
-        Common.GetDataFromLocalStorage('userid');
-
         Common.initFirebase();
+        
+        AsyncStorage.getItem('userid').then((res) => {
+            if (res !== '' && res !==null) {
+                this.fbAutomaticLogin();
+            }
+        }).catch((error) => {
+            alert(error);
+        });
 
-        if (this.state.isLogedIn === 'false') {
-            this.fbAutomaticLogin();
-        }
+    
     }
 
     render() {
@@ -157,10 +154,6 @@ export default class LoginFB extends Component {
 
                 <Button rounded style={styles.LoginButton} onPress={this.loginClick}>
                     <Text>Login With Facebook</Text>
-                </Button>
-
-                <Button rounded style={styles.LoginButton} onPress={() => { LoginManager.logOut() }}>
-                    <Text>LogOut</Text>
                 </Button>
 
                 {this.state.pic !== null &&

@@ -1,14 +1,17 @@
 import React from 'react';
 import {
     View,
-    Button,
     TextInput, ActivityIndicator, ToastAndroid, Keyboard, Picker, AsyncStorage
 } from 'react-native';
 
-import { Container, Header, Content, Form, Item, Input, Label, Text,Thumbnail } from 'native-base';
+import { Container, Header, Content, Form, Item, Label, Button, Text, Icon, Left, Title, Body,
+     Right, Thumbnail, Input, Footer, FooterTab } from 'native-base';
 //import AsyncStorage from '@react-native-community/async-storage';
 import firebase from 'firebase';
 import { AppConfig } from './CommonFunction';
+import styles from './Components/MainStyle';
+import * as Common from './CommonFunction';
+import { LoginManager } from 'react-native-fbsdk';
 
 export default class SignIn extends React.Component {
 
@@ -17,7 +20,7 @@ export default class SignIn extends React.Component {
         this.state = {
             inputText: '',
             isLoading: false,
-            userArray: []
+            userArray: [],
         }
     }
 
@@ -27,20 +30,6 @@ export default class SignIn extends React.Component {
         }
         this.getData();
     }
-
-
-    storeData = async () => {
-        try {
-            console.log("start");
-
-            await AsyncStorage.setItem('@IsLogedIn', 'true');
-            console.log("success add");
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-
 
     getData = () => {
         firebase.database().ref('users').on('value', (snap) => {
@@ -154,8 +143,16 @@ export default class SignIn extends React.Component {
         })
     }
 
+    logoutFormFB = () => {
+        LoginManager.logOut();
+        AsyncStorage.removeItem('userid');
+        this.props.navigation.navigate('Home');
+    }
+
 
     render() {
+        const { navigation } = this.props;
+
         const { userArray } = this.state
         console.log(userArray + "1");
         let res;
@@ -175,20 +172,82 @@ export default class SignIn extends React.Component {
 
 
         return (
-            <View>
-                <TextInput value={this.state.inputText} onChangeText={(text) => this.setState({ inputText: text })} placeholder='enter name'></TextInput>
-                <Button onPress={this.testFunc} title='ADD' />
-                <Button onPress={this.testFuncBulk} title='Bulk' />
-                {res}
-                {this.state.isLoading == true &&
-                    <ActivityIndicator size="large" color="#0000ff" />
-                }
+            <Container>
 
-                <Button onPress={this.Register} title='Register' />
+                <Header>
+                    <Left>
+                        <Button transparent>
+                            <Icon name='menu' onPress={() => { this.props.navigation.toggleDrawer() }} />
 
-                <Button onPress={this.sendSignInLinkToEmail} title='SendToMail' />
+                        </Button>
+                    </Left>
+                    <Body>
+                        <Title>Header</Title>
+                    </Body>
+                    <Right>
+                        <Button transparent onPress={this.logoutFormFB}>
+                            <Text>SignOut</Text>
+                        </Button>
+                    </Right>
+                </Header>
 
-            </View>
+
+                <Content style={{ paddingTop: 10 }}>
+
+                    {navigation.state.params.userIdPic &&
+                        <Thumbnail  source={{ uri: navigation.state.params.userIdPic }} />
+                    }
+
+                    {/* 
+                    <Item>
+                        <Input placeholder='enter name' value={this.state.inputText} onChangeText={(text) => this.setState({ inputText: text })} />
+                    </Item> */}
+                    {/* 
+                    {res}
+                    <Button rounded style={styles.LoginButton} onPress={this.testFunc}>
+                        <Text>ADD</Text>
+                    </Button>
+
+                    <Button rounded style={styles.LoginButton} onPress={this.testFuncBulk}>
+                        <Text>Bulk</Text>
+                    </Button>
+
+                    <Button rounded style={styles.LoginButton} onPress={this.Register}>
+                        <Text>Register</Text>
+                    </Button>
+
+                    <Button rounded style={styles.LoginButton} onPress={this.sendSignInLinkToEmail}>
+                        <Text>SendToMail</Text>
+                    </Button> */}
+
+
+                    {this.state.isLoading == true &&
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    }
+
+                </Content>
+
+                <Footer>
+                    <FooterTab>
+                        <Button vertical>
+                            <Icon name="apps"/>
+                            <Text>Apps</Text>
+                        </Button>
+                        <Button vertical>
+                            <Icon name="camera" />
+                            <Text>Camera</Text>
+                        </Button>
+                        <Button vertical active>
+                            <Icon active name="navigate" />
+                            <Text>Navigate</Text>
+                        </Button>
+                        <Button vertical>
+                            <Icon name="person" />
+                            <Text>Contact</Text>
+                        </Button>
+                    </FooterTab>
+                </Footer>
+            </Container>
         )
     }
 }
