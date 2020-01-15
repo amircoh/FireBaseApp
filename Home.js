@@ -10,7 +10,7 @@ class HomeScreen extends React.Component {
         return (
             <View style={{ flex: 1 }}>
                 <LoginComponent navigation={this.props.navigation}  />
-            </View>
+            </View> 
         );
     }
 }
