@@ -37,6 +37,7 @@ export default class LoginFB extends Component {
                     function (result) {
                         if (result.isCancelled) {
                             console.log("Login cancelled");
+                            LoginManager.logOut();
                         } else {
                             console.log(
                                 "Login success with permissions: " +
@@ -56,15 +57,19 @@ export default class LoginFB extends Component {
                 Common.SaveToLocalStorage('userid', result.id);
 
                 this.props.navigation.navigate('Details', {
-                    userIdPic: result.picture.data.url
+                    userIdPic: result.picture.data.url,
+                    userBirthDay : result.birthday,
+                    userName: result.first_name,
+                    userFriendsList: result.friends.data
                 });
             }
         }
 
-        LoginManager.logInWithPermissions(["public_profile"]).then(
+        LoginManager.logInWithPermissions(["public_profile,user_birthday,user_friends"]).then(
             function (result) {
                 if (result.isCancelled) {
                     console.log("Login cancelled");
+                    LoginManager.logOut();
                 } else {
                     //success login
                     const infoRequest = new GraphRequest(
@@ -72,7 +77,7 @@ export default class LoginFB extends Component {
                         {
                             parameters: {
                                 fields: {
-                                    string: 'id,picture,email,name,first_name,middle_name,last_name'
+                                    string: 'id,picture,birthday,email,name,first_name,middle_name,last_name,friends{name}'
                                 }
                             }
                         },
@@ -95,7 +100,7 @@ export default class LoginFB extends Component {
 
             if (error) {
 
-                LoginManager.logInWithPermissions(["public_profile"]).then(
+                LoginManager.logInWithPermissions(["public_profile,user_birthday,user_friends"]).then(
                     function (result) {
                         if (result.isCancelled) {
                             console.log("Login cancelled");
@@ -113,7 +118,10 @@ export default class LoginFB extends Component {
             } else {
                 //success Logged In
                 this.props.navigation.navigate('Details',{
-                    userIdPic: result.picture.data.url
+                    userIdPic: result.picture.data.url,
+                    userBirthDay : result.birthday,
+                    userName: result.first_name,
+                    userFriendsList: result.friends.data
                 });
             }
         }
@@ -123,7 +131,7 @@ export default class LoginFB extends Component {
             {
                 parameters: {
                     fields: {
-                        string: 'picture,email,name,first_name,middle_name,last_name'
+                        string: 'id,picture,birthday,email,name,first_name,middle_name,last_name,friends{name}'
                     }
                 }
             },
